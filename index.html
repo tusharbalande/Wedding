@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Will you marry me? 💍</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 50%, #f48fb1 100%);
+    font-family: 'Quicksand', sans-serif;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Floating hearts background */
+  .heart-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .heart-bg .h {
+    position: absolute;
+    opacity: 0.15;
+    animation: floatHeart linear infinite;
+    color: #e91e63;
+  }
+  @keyframes floatHeart {
+    0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.15; }
+    90%  { opacity: 0.15; }
+    100% { transform: translateY(-120px) rotate(360deg); opacity: 0; }
+  }
+
+  /* Card */
+  .card {
+    position: relative;
+    z-index: 1;
+    background: #fff;
+    border-radius: 28px;
+    box-shadow: 0 16px 60px rgba(180, 60, 100, 0.18);
+    padding: 40px 36px 36px;
+    text-align: center;
+    max-width: 420px;
+    width: 90%;
+    height: 420px;
+  }
+
+  /* Cat SVG */
+  .cat-wrap {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 16px;
+    position: relative;
+  }
+  .cat-wrap svg { width: 100%; height: 100%; }
+
+  .cat-heart {
+    position: absolute;
+    top: 0px;
+    right: 2px;
+    font-size: 26px;
+    animation: heartPop 1.2s ease-in-out infinite;
+  }
+  @keyframes heartPop {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.25); }
+  }
+
+  /* Question */
+  .question {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: #4a2040;
+    margin-bottom: 28px;
+    line-height: 1.3;
+  }
+
+  /* Centered button wrapper */
+  .btn-center-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+
+  /* Yes button — stays fixed in place, centered */
+  .btn-yes {
+    background: linear-gradient(135deg, #f06292, #ec407a);
+    color: #fff;
+    border: none;
+    padding: 14px 40px;
+    border-radius: 50px;
+    font-family: inherit;
+    font-size: 1.15rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(236, 64, 122, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    z-index: 5;
+  }
+  .btn-yes:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 24px rgba(236, 64, 122, 0.55);
+  }
+  .btn-yes:active { transform: scale(0.96); }
+
+  /* No button — starts relative (in flex row), switches to absolute on first click */
+  .btn-no {
+    background: #f5f0f2;
+    color: #9e7080;
+    border: 2px solid #e8d0d8;
+    padding: 12px 32px;
+    border-radius: 50px;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    z-index: 10;
+    white-space: nowrap;
+    transition: left 0.3s cubic-bezier(.68,-.55,.265,1.55),
+                top  0.3s cubic-bezier(.68,-.55,.265,1.55),
+                opacity 0.4s ease,
+                transform 0.4s ease;
+  }
+  .btn-no:hover { background: #efe0e5; }
+
+  /* Hints */
+  .shy-hint {
+    position: absolute;
+    bottom: 30px;
+    left: 0; right: 0;
+    font-size: 0.78rem;
+    color: #c4909e;
+    font-style: italic;
+    text-align: center;
+  }
+  .no-count {
+    position: absolute;
+    bottom: 12px;
+    left: 0; right: 0;
+    font-size: 0.72rem;
+    color: #c4909e;
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* Celebration */
+  .celebration { display: none; text-align: center; padding-top: 20px; }
+  .celebration.show { display: block; animation: fadeIn 0.5s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:scale(0.92); } to { opacity:1; transform:scale(1); } }
+  .celebration .confetti-text {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #e91e63;
+    margin: 16px 0 8px;
+  }
+  .celebration .sub-text {
+    color: #9e4060;
+    font-size: 1rem;
+  }
+
+  /* Confetti */
+  .confetti-burst {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .confetti-piece {
+    position: absolute;
+    border-radius: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="heart-bg" id="heartBg"></div>
+
+<div class="card" id="mainCard">
+
+  <div class="cat-wrap">
+    <svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="28,52 18,12 52,38" fill="#f0a070"/>
+      <polygon points="112,52 122,12 88,38" fill="#f0a070"/>
+      <polygon points="32,48 25,22 46,40" fill="#e88a6a"/>
+      <polygon points="108,48 115,22 94,40" fill="#e88a6a"/>
+      <ellipse cx="70" cy="68" rx="46" ry="42" fill="#f5b87a"/>
+      <circle cx="52" cy="64" r="5.5" fill="#2c2c2c"/>
+      <circle cx="88" cy="64" r="5.5" fill="#2c2c2c"/>
+      <circle cx="54" cy="62" r="2" fill="#fff"/>
+      <circle cx="90" cy="62" r="2" fill="#fff"/>
+      <ellipse cx="70" cy="75" rx="3.5" ry="2.5" fill="#f48fb1"/>
+      <path d="M67,77.5 Q70,81 73,77.5" stroke="#d4698a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <line x1="30" y1="73" x2="54" y2="75" stroke="#d4a070" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="30" y1="78" x2="54" y2="77" stroke="#d4a070" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="86" y1="75" x2="110" y2="73" stroke="#d4a070" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="86" y1="77" x2="110" y2="78" stroke="#d4a070" stroke-width="1.2" stroke-linecap="round"/>
+      <ellipse cx="42" cy="74" rx="6" ry="3" fill="#f48fb1" opacity="0.45"/>
+      <ellipse cx="98" cy="74" rx="6" ry="3" fill="#f48fb1" opacity="0.45"/>
+    </svg>
+    <div class="cat-heart">💗</div>
+  </div>
+
+  <div class="question">Gayatri will you marry me? 💕</div>
+
+  <div class="btn-center-wrap" id="btnWrap">
+    <button class="btn-yes" id="btnYes">Yes</button>
+    <button class="btn-no"  id="btnNo">No</button>
+  </div>
+
+  <div class="shy-hint" id="shyHint">"No" seems a bit shy 🥺</div>
+  <div class="no-count" id="noCount"></div>
+
+  <div class="celebration" id="celebration">
+    <div class="confetti-text">Yayy!! 🎉💍</div>
+    <div class="sub-text">You made me the happiest person! ✨</div>
+  </div>
+</div>
+
+<div class="confetti-burst" id="confettiBurst"></div>
+
+<script>
+  // ---- Floating hearts ----
+  const heartBg = document.getElementById('heartBg');
+  for (let i = 0; i < 18; i++) {
+    const h = document.createElement('div');
+    h.className = 'h';
+    h.textContent = '♥';
+    h.style.left = Math.random() * 100 + '%';
+    h.style.animationDuration = (6 + Math.random() * 8) + 's';
+    h.style.animationDelay = (Math.random() * 8) + 's';
+    h.style.fontSize = (12 + Math.random() * 20) + 'px';
+    heartBg.appendChild(h);
+  }
+
+  // ---- No button ----
+  const card    = document.getElementById('mainCard');
+  const btnNo   = document.getElementById('btnNo');
+  const btnYes  = document.getElementById('btnYes');
+  const shyHint = document.getElementById('shyHint');
+  const noCount = document.getElementById('noCount');
+  let noClicks  = 0;
+
+  const noMessages = [
+    '"No" seems a bit shy 🥺',
+    'Aww, "No" is running away! 😂',
+    '"No" is getting scared… 👀',
+    'Catch it if you can! 😜',
+    'Almost… just a little more! 💨',
+  ];
+
+  btnNo.addEventListener('click', () => {
+    // On first click, snapshot current screen position then switch to absolute
+    if (noClicks === 0) {
+      const cardRect = card.getBoundingClientRect();
+      const btnRect  = btnNo.getBoundingClientRect();
+      btnNo.style.position = 'absolute';
+      btnNo.style.left = (btnRect.left - cardRect.left) + 'px';
+      btnNo.style.top  = (btnRect.top  - cardRect.top)  + 'px';
+    }
+    noClicks++;
+    shyHint.textContent = noMessages[Math.min(noClicks - 1, noMessages.length - 1)];
+
+    // 5th click → disappear
+    if (noClicks >= 5) {
+      btnNo.style.opacity = '0';
+      btnNo.style.transform = 'scale(0)';
+      setTimeout(() => { btnNo.style.display = 'none'; }, 450);
+      noCount.textContent = 'There is no way out now... 😈💍';
+      return;
+    }
+
+    // --- Jump to random spot inside card, avoiding Yes ---
+    const cardW = card.offsetWidth;
+    const cardH = card.offsetHeight;
+    const btnW  = btnNo.offsetWidth;
+    const btnH  = btnNo.offsetHeight;
+
+    // Allowed zone: x from 15 to cardW-btnW-15, y from 230 to cardH-btnH-60
+    const minX = 15;
+    const maxX = cardW - btnW - 15;
+    const minY = 230;
+    const maxY = cardH - btnH - 60;
+
+    // Yes button center relative to card
+    const yesRect  = btnYes.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    const yesCX = (yesRect.left - cardRect.left) + yesRect.width  / 2;
+    const yesCY = (yesRect.top  - cardRect.top)  + yesRect.height / 2;
+    const safeDist = (yesRect.width / 2) + (btnW / 2) + 30;
+
+    let x, y;
+    for (let i = 0; i < 200; i++) {
+      x = minX + Math.random() * (maxX - minX);
+      y = minY + Math.random() * (maxY - minY);
+      const dist = Math.hypot((x + btnW/2) - yesCX, (y + btnH/2) - yesCY);
+      if (dist > safeDist) break;
+    }
+
+    btnNo.style.left = x + 'px';
+    btnNo.style.top  = y + 'px';
+  });
+
+  // ---- Yes button ----
+  btnYes.addEventListener('click', () => {
+    btnYes.style.display  = 'none';
+    btnNo.style.display   = 'none';
+    shyHint.style.display = 'none';
+    noCount.style.display = 'none';
+    document.getElementById('celebration').classList.add('show');
+    launchConfetti();
+  });
+
+  // ---- Confetti ----
+  function launchConfetti() {
+    const container = document.getElementById('confettiBurst');
+    const colors = ['#f06292','#ec407a','#ff80ab','#fff176','#ce93d8','#fff59d','#ef5350','#ab47bc'];
+    for (let i = 0; i < 80; i++) {
+      const p = document.createElement('div');
+      p.className = 'confetti-piece';
+      p.style.left = (40 + Math.random() * 20) + '%';
+      p.style.top  = (15 + Math.random() * 20) + '%';
+      p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      p.style.width  = (6 + Math.random() * 8) + 'px';
+      p.style.height = (6 + Math.random() * 8) + 'px';
+      p.style.opacity = 1;
+      p.style.transition = `transform ${1.5 + Math.random()}s cubic-bezier(.2,.8,.3,1), opacity 2s ease`;
+      container.appendChild(p);
+      const endX = (Math.random() - 0.5) * 400;
+      const endY = 200 + Math.random() * 500;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          p.style.transform = `translate(${endX}px, ${endY}px) rotate(${Math.random()*720}deg)`;
+          p.style.opacity = 0;
+        });
+      });
+      setTimeout(() => p.remove(), 3000);
+    }
+  }
+</script>
+</body>
+</html>
